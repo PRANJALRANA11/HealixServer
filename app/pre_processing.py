@@ -17,13 +17,24 @@ def audio(text):
     ).write_to_file("audio.mp3")
 
 
-async def stream_audio(text):
+async def stream_audio(text:str):
     a = client.audio.speech.create(
         model="tts-1",
         voice="alloy",
         input=text,
     )
     async for chunk in await a.aiter_bytes():
+        yield chunk
+
+
+async def stream_text(text:str):
+    yield text
+
+
+async def combine_stream_audio(text:str):
+    async for chunk in stream_text(text):
+        yield chunk
+    async for chunk in stream_audio(text):
         yield chunk
 
 

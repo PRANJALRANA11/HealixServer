@@ -196,6 +196,42 @@ def get_last_response():
         "response": last_response
     }
 
+
+
+@router.post("/takesession/experimental")
+async def session_response_with_both_audio_and_text(input: session):
+    query = {
+        "token": input.token,
+        "session.session_id": input.session_id
+    }
+    response = use_model(message=input.message, model=ChatGPTModel())
+    pp.audio(response)
+    document = collection.find_one(query)
+
+
+    if (document == None):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with token {input.token} not found"
+        )
+    sentiment_compound = pp.store_compound_score(input.message)
+    # theme = pp.store_theme_of_user(input.message)
+    new_thread = {
+        "thread_id" : uuid4().hex,
+        "message": input.message,
+        "response": response,
+        "sentiment_compound": sentiment_compound,
+        # "theme": theme,
+        "created_at": datetime.now().isoformat()
+    }
+
+    collection.update_one(query, {"$push": {"session.$.thread": new_thread}})
+
+    update_time(token=input.token, session_id=input.session_id)
+    last_response = response
+    return StreamingResponse(pp.combine_stream_audio(response), media_type="multipart/x-mixed-replace")
+
+
 @router.post("/takesession/rag")
 def create_thread_by_rag(input: session):
     query = {
