@@ -79,6 +79,10 @@ def create_session(token):
     }
 
 
+global last_response
+
+last_response = "abi tak koi response nhi aya end point se bhai"
+
 @router.post("/takesession/promot")
 def session_with_audio(input: session):
     query = {
@@ -110,6 +114,7 @@ def session_with_audio(input: session):
 
     # response = FileResponse(path="audio.mp3", media_type="audio/mp3", filename="audio.mp3")
     update_time(token=input.token, session_id=input.session_id)
+    last_response = response
     return {
         "message":  response
     }
@@ -145,6 +150,7 @@ async def session_with_audio(input: session):
 
     response = FileResponse(path="audio.mp3", media_type="audio/mp3", filename="audio.mp3")
     update_time(token=input.token, session_id=input.session_id)
+    last_response = response
     return response
     # return {
     #     "message":  response
@@ -180,9 +186,15 @@ async def session_with_audio(input: session):
 
     
     update_time(token=input.token, session_id=input.session_id)
+    last_response = response
     return StreamingResponse(pp.stream_audio(response), media_type="audio/mp3")
 
 
+@router.get("/lastresponse")
+def get_last_response():
+    return {
+        "response": last_response
+    }
 
 @router.post("/takesession/rag")
 def create_thread_by_rag(input: session):
