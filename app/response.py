@@ -41,6 +41,17 @@ class GeminiModel(Model):
         print("Model have some issue")
         exit(2)
 
+class Grok(Model):
+    def generate_response(message: str) -> str:
+        url = ""
+        response = requests.get(url+"/response", json={
+            "message": message,
+        })
+
+        if(response.status_code == 200):
+            output = response.json()["message"]
+            return output
+
 
 
 
