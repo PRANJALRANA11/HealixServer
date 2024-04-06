@@ -79,7 +79,7 @@ def create_session(token):
     }
 
 @router.post("/takesession/promot")
-def create_thread_by_promot(input: session):
+def session_with_audio(input: session):
     query = {
         "token": input.token,
         "session.session_id": input.session_id
@@ -114,7 +114,7 @@ def create_thread_by_promot(input: session):
     }
 
 @router.post("/takesession/audio")
-def create_thread_by_promot(input: session):
+def session_with_audio(input: session):
     query = {
         "token": input.token,
         "session.session_id": input.session_id
@@ -144,6 +144,7 @@ def create_thread_by_promot(input: session):
 
     response = FileResponse(path="audio.mp3", media_type="audio/mp3", filename="audio.mp3")
     update_time(token=input.token, session_id=input.session_id)
+    return response
     # return {
     #     "message":  response
     # }
