@@ -4,7 +4,7 @@ from datetime import datetime
 from dotenv import load_dotenv, find_dotenv
 from uuid import uuid4
 from fastapi import APIRouter, HTTPException, status
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import database as db
@@ -78,6 +78,7 @@ def create_session(token):
         "session_id": session_id
     }
 
+
 @router.post("/takesession/promot")
 def session_with_audio(input: session):
     query = {
@@ -114,7 +115,7 @@ def session_with_audio(input: session):
     }
 
 @router.post("/takesession/audio")
-def session_with_audio(input: session):
+async def session_with_audio(input: session):
     query = {
         "token": input.token,
         "session.session_id": input.session_id
@@ -148,6 +149,39 @@ def session_with_audio(input: session):
     # return {
     #     "message":  response
     # }
+
+@router.post("/takesession/streamaudio")
+async def session_with_audio(input: session):
+    query = {
+        "token": input.token,
+        "session.session_id": input.session_id
+    }
+    response = use_model(message=input.message, model=ChatGPTModel())
+    document = collection.find_one(query)
+
+
+    if (document == None):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with token {input.token} not found"
+        )
+    sentiment_compound = pp.store_compound_score(input.message)
+    # theme = pp.store_theme_of_user(input.message)
+    new_thread = {
+        "thread_id" : uuid4().hex,
+        "message": input.message,
+        "response": response,
+        "sentiment_compound": sentiment_compound,
+        # "theme": theme,
+        "created_at": datetime.now().isoformat()
+    }
+
+    collection.update_one(query, {"$push": {"session.$.thread": new_thread}})
+
+    
+    update_time(token=input.token, session_id=input.session_id)
+    return StreamingResponse(pp.stream_audio(response), media_type="audio/mp3")
+
 
 
 @router.post("/takesession/rag")

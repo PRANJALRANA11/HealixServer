@@ -2,7 +2,7 @@ import os
 import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse 
+from fastapi.responses import FileResponse
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from app.route import user, session, metrics
@@ -26,7 +26,3 @@ app.include_router(metrics.router)
 @app.get("/")
 async def root():
     return FileResponse("app/template/index.html")
-
-
-
-
