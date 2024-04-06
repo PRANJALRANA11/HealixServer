@@ -17,6 +17,16 @@ def audio(text):
     ).write_to_file("audio.mp3")
 
 
+async def stream_audio(text):
+    a = client.audio.speech.create(
+        model="tts-1",
+        voice="alloy",
+        input=text,
+    )
+    async for chunk in await a.aiter_bytes():
+        yield chunk
+
+
 def store_compound_score(sentence):
     analyzer = SentimentIntensityAnalyzer()
     vs = analyzer.polarity_scores(sentence)
