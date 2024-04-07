@@ -29,7 +29,7 @@ class ChatGPTModel(Model):
         return result["message"]
 
 class GeminiModel(Model):
-    def generate_response(message: str) -> str:
+    def generate_response(self, message: str) -> str:
         url = "http://127.0.0.1:5000"
         response = requests.get(url+"/response", json={
             "message": message,
@@ -42,15 +42,14 @@ class GeminiModel(Model):
         exit(2)
 
 class Grok(Model):
-    def generate_response(message: str) -> str:
-        url = "https://grok-healix-model.onrender.com"
-        response = requests.get(url+"/pranjal_promot", json={
+    def generate_response(self, message: str) -> str:
+        url = "https://grok-healix-model.onrender.com/"
+        response = requests.post(url+"pranjal_promot", json={
             "message": message,
         })
 
-        if(response.status_code == 200):
-            output = response.json()["message"]
-            return output
+        result = response.json()
+        return result["response"]
 
 
 
@@ -88,5 +87,3 @@ def user_input(user_question):
     response = model.predict(promot)
 
     return response
-
-
