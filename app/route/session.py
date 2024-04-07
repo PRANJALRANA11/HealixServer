@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import database as db
 import pre_processing as pp
 from pydantic import BaseModel
-from response import use_model, ChatGPTModel, user_input
+from response import use_model, user_input, Grok
 
 load_dotenv(find_dotenv())
 
@@ -89,7 +89,7 @@ def session_with_audio(input: session):
         "token": input.token,
         "session.session_id": input.session_id
     }
-    response = use_model(message=input.message, model=ChatGPTModel())
+    response = use_model(message=input.message, model=Grok())
     # pp.audio(response)
     document = collection.find_one(query)
 
@@ -125,7 +125,7 @@ async def session_with_audio(input: session):
         "token": input.token,
         "session.session_id": input.session_id
     }
-    response = use_model(message=input.message, model=ChatGPTModel())
+    response = use_model(message=input.message, model=Grok())
     pp.audio(response)
     document = collection.find_one(query)
 
@@ -162,7 +162,7 @@ async def session_with_audio(input: session):
         "token": input.token,
         "session.session_id": input.session_id
     }
-    response = use_model(message=input.message, model=ChatGPTModel())
+    response = use_model(message=input.message, model=Grok())
     document = collection.find_one(query)
 
 
@@ -204,7 +204,7 @@ async def session_response_with_both_audio_and_text(input: session):
         "token": input.token,
         "session.session_id": input.session_id
     }
-    response = use_model(message=input.message, model=ChatGPTModel())
+    response = use_model(message=input.message, model=Grok())
     pp.audio(response)
     document = collection.find_one(query)
 

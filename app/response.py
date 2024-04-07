@@ -43,8 +43,8 @@ class GeminiModel(Model):
 
 class Grok(Model):
     def generate_response(message: str) -> str:
-        url = ""
-        response = requests.get(url+"/response", json={
+        url = "https://grok-healix-model.onrender.com"
+        response = requests.get(url+"/pranjal_promot", json={
             "message": message,
         })
 
