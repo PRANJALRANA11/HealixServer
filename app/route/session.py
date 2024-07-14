@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import database as db
 import pre_processing as pp
 from pydantic import BaseModel
-from response import use_model, user_input, Grok
+from response import use_model, user_input, Grok, ChatGPTModel
 
 load_dotenv(find_dotenv())
 
@@ -125,7 +125,7 @@ async def session_with_audio(input: session):
         "token": input.token,
         "session.session_id": input.session_id
     }
-    response = use_model(message=input.message, model=Grok())
+    response = use_model(message=input.message, model=ChatGPTModel())
     pp.audio(response)
     document = collection.find_one(query)
 
